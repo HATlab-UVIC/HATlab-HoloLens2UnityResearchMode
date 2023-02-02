@@ -9,11 +9,6 @@ using Windows.Storage.Streams;
 public class TCPClient : MonoBehaviour
 {
     #region Unity Functions
-
-    private void Awake()
-    {
-        ConnectionStatusLED.material.color = Color.red;
-    }
     private void OnApplicationFocus(bool focus)
     {
         if (!focus)
@@ -27,8 +22,6 @@ public class TCPClient : MonoBehaviour
 
     [SerializeField]
     string hostIPAddress, port;
-
-    public Renderer ConnectionStatusLED;
     private bool connected = false;
     public bool Connected
     {
@@ -52,7 +45,6 @@ public class TCPClient : MonoBehaviour
             dr = new DataReader(socket.InputStream);
             dr.InputStreamOptions = InputStreamOptions.Partial;
             connected = true;
-            ConnectionStatusLED.material.color = Color.green;
         }
         catch (Exception ex)
         {
@@ -76,18 +68,18 @@ public class TCPClient : MonoBehaviour
     }
 
     bool lastMessageSent = true;
-    public async void SendUINT16Async(ushort[] data)
+    public async void SendUINT16Async(float[] data)
     {
         if (!lastMessageSent) return;
         lastMessageSent = false;
         try
         {
             // Write header
-            dw.WriteString("s"); // header "s" 
+            dw.WriteString("p"); // header "s" 
 
             // Write point cloud
             dw.WriteInt32(data.Length);
-            dw.WriteBytes(UINT16ToBytes(data));
+            dw.WriteBytes(FloatToBytes(data));
 
             // Send out
             await dw.StoreAsync();
@@ -198,6 +190,13 @@ public class TCPClient : MonoBehaviour
         byte[] ushortInBytes = new byte[data.Length * sizeof(ushort)];
         System.Buffer.BlockCopy(data, 0, ushortInBytes, 0, ushortInBytes.Length);
         return ushortInBytes;
+    }
+
+    byte[] FloatToBytes(float [] floatData){
+
+        var byteArray = new byte[floatData.Length * 4];
+        System.Buffer.BlockCopy(floatData, 0, byteArray, 0, byteArray.Length);
+        return byteArray;
     }
     #endregion
 

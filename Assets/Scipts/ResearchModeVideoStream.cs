@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 
 #if ENABLE_WINMD_SUPPORT
 using HL2UnityPlugin;
+using UnityEngine.Windows;
 #endif
 
 public class ResearchModeVideoStream : MonoBehaviour
@@ -55,6 +56,7 @@ public class ResearchModeVideoStream : MonoBehaviour
     private Texture2D RFMediaTexture = null;
     private byte[] RFFrameData = null;
 
+    public bool textVisible = true;
     public UnityEngine.UI.Text text;
 
     public GameObject pointCloudRendererGo;
@@ -319,16 +321,35 @@ public class ResearchModeVideoStream : MonoBehaviour
     }
 #endif
 
-
-    #region Button Event Functions
     public void TogglePreviewEvent()
     {
+        #if WINDOWS_UWP
         startRealtimePreview = !startRealtimePreview;
+        if (startRealtimePreview)
+        {
+            depthPreviewPlane.SetActive(true);
+            shortAbImagePreviewPlane.SetActive(true);
+            longDepthPreviewPlane.SetActive(true);
+            longAbImagePreviewPlane.SetActive(true);
+            LFPreviewPlane.SetActive(true);
+            RFPreviewPlane.SetActive(true);
+        }
+        else
+        {
+            depthPreviewPlane.SetActive(false);
+            shortAbImagePreviewPlane.SetActive(false);
+            longDepthPreviewPlane.SetActive(false);
+            longAbImagePreviewPlane.SetActive(false);
+            LFPreviewPlane.SetActive(false);
+            RFPreviewPlane.SetActive(false);
+        }
+        #endif
     }
 
     bool renderPointCloud = true;
     public void TogglePointCloudEvent()
     {
+        #if WINDOWS_UWP
         renderPointCloud = !renderPointCloud;
         if (renderPointCloud)
         {
@@ -338,6 +359,7 @@ public class ResearchModeVideoStream : MonoBehaviour
         {
             pointCloudRendererGo.SetActive(false);
         }
+        #endif
     }
 
     public void StopSensorsEvent()
@@ -360,6 +382,78 @@ public class ResearchModeVideoStream : MonoBehaviour
         }
 #endif
 #endif
+    }
+
+    public void SavePointCloudPLY()
+    {
+
+        if (depthSensorMode == DepthSensorMode.LongThrow)
+        {
+            #if ENABLE_WINMD_SUPPORT
+            var longpointCloud = researchMode.GetLongThrowPointCloudBuffer();
+
+            #if WINDOWS_UWP
+            if (tcpClient != null)
+            {
+                tcpClient.SendUINT16Async(longpointCloud);
+            }
+            #endif
+            #endif
+        }
+        else if (depthSensorMode == DepthSensorMode.ShortThrow){
+            #if ENABLE_WINMD_SUPPORT
+            var shortpointCloud = researchMode.GetPointCloudBuffer();
+
+            #if WINDOWS_UWP
+            if (tcpClient != null)
+            {
+                tcpClient.SendUINT16Async(shortpointCloud);
+            }
+            #endif
+            #endif
+
+        }
+
+    }
+
+    public async void TakePointCloud()
+    {
+#if WINDOWS_UWP
+        if (enablePointCloud && renderPointCloud && pointCloudRendererGo != null)
+        {
+            float[] pointCloud = new float[] { };
+            if (depthSensorMode == DepthSensorMode.LongThrow) pointCloud = researchMode.GetLongThrowPointCloudBuffer();
+            else if (depthSensorMode == DepthSensorMode.ShortThrow) pointCloud = researchMode.GetPointCloudBuffer();
+            
+            SavePLY.BeginPLY();
+
+            if (pointCloud.Length > 0)
+            {
+                int pointCloudLength = pointCloud.Length / 3;
+                Vector3[] saveCloudVector3 = new Vector3[pointCloudLength];
+                for (int i = 0; i < pointCloudLength; i++)
+                {
+                    saveCloudVector3[i] = new Vector3(pointCloud[3 * i], pointCloud[3 * i + 1], pointCloud[3 * i + 2]);
+                    SavePLY.addVertex(saveCloudVector3[i], pointColor);
+                }
+                
+            }
+
+        SavePLY.endWriteFile();
+        }
+#endif
+    }
+
+    public void TakeHolographicPicture()
+    {
+        // TakePicture photoCapture = new TakePicture();
+        // photoCapture.BeginPicture();
+    }
+
+    public void TakeHolographicVideo()
+    {
+        // TakeVideo videoCapture = new TakeVideo();
+        // videoCapture.BeginVideo();
     }
 
     public void SaveSpatialImageEvent()
@@ -387,7 +481,6 @@ public class ResearchModeVideoStream : MonoBehaviour
 #endif
     }
 
-    #endregion
     private void OnApplicationFocus(bool focus)
     {
         if (!focus) StopSensorsEvent();

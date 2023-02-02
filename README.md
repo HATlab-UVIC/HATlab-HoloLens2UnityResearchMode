@@ -1,47 +1,30 @@
-# HoloLens2-ResearchMode-Unity
-Unity Plugin for using research mode functionality in HoloLens 2. Modified based on [HoloLens2ForCV](https://github.com/microsoft/HoloLens2ForCV).
+# Overview
+This Unity project shows 
 
-![Depth Map Example](https://github.com/petergu684/HoloLens2-ResearchMode-Unity/blob/master/DepthMapExample.jpg)
+- how to visualize the AHAT (short-throw) depth camera video stream and front spatial camera stream in Unity.
+- how to reconstruct and visualize point cloud from AHAT depth camera data in Unity.
+- how to send image to laptop using basic socket. (Python server script in `python` folder)
+- how to obtain IMU data. (`Assets/Scenes/ImuViewSample.unity`)
 
-Skeleton to wrap HoloLens 2 research mode api into Windows Runtime extension. 
+# Compatibility
+- Unity 2019.4*
+- Visual Studio 2019
 
-To use it in Unity,
-- Build this project (ARM64,Release) and copy the .dll and .winmd files in `HL2UnityPlugin\ARM64\Release\HL2UnityPlugin` into `Assets/Plugins/WSA/ARM64` folder of your Unity project.
-- Change the architecture in your Unity build settings to be ARM64.
-- After building the visual studio solution from Unity, go to `App/[Project name]/Package.appxmanifest` and add the restricted capability to the manifest file. (Same as what you would do to enable research mode on HoloLens 1, reference: http://akihiro-document.azurewebsites.net/post/hololens_researchmode2/)
-```xml 
-<Package 
-  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" 
-  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" 
-  xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2" 
-  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" 
-  xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4" 
-  xmlns:iot="http://schemas.microsoft.com/appx/manifest/iot/windows10" 
-  xmlns:mobile="http://schemas.microsoft.com/appx/manifest/mobile/windows10" 
-  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" 
-  IgnorableNamespaces="uap uap2 uap3 uap4 mp mobile iot rescap" 
-  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"> 
-```
+\* To use it in Unity 2020.1 - 2021.1,
+- Open Unity project and install XRSDK (Project Settings-XR Plugin Management-install, then tick "Windows Mixed Reality")
+- Select MixedRealityToolkit Gameobject in the Hierarchy. In the Inspector, change the mixed reality configuration profile to `New XRSDKConfigurationProfile` (or `DefaultXRSDKConfigurationProfile`).
+- Point cloud sample not supported in Unity 2021.2 or later since OpenXR becomes the only supported pipeline with different way of obtaining the Unity world coordiante frame. Other functions shouldn't be influenced.
 
-```xml
-  <Capabilities>
-    <rescap:Capability Name="perceptionSensorsExperimental" />
-    <Capability Name="internetClient" />
-    <Capability Name="internetClientServer" />
-    <Capability Name="privateNetworkClientServer" />
-    <uap2:Capability Name="spatialPerception" />
-    <DeviceCapability Name="backgroundSpatialPerception"/>
-    <DeviceCapability Name="webcam" />
-  </Capabilities>
-```
-`<DeviceCapability Name="backgroundSpatialPerception"/>` is only necessary if you use IMU sensor. 
-- Save the changes and deploy the solution to your HoloLens 2.
+# Build
+1. Open this folder in Unity.
+2. Go to Build Settings, switch target platform to UWP.
+3. In the Project tab, open `Scenes/PointCloudSample.unity`.
+4. Hopefully, there is no error in the console. Go to Build Settings, change Target Device to HoloLens, Architecture to ARM64. Build the Unity project in a new folder (e.g. App folder).
+5. Open `App/HL2ResearchModeUnitySample/Package.appxmanifest` with a text editor. Add `xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"` before the `IgnorableNamespaces` in Package tag (line 2). Add `<rescap:Capability Name="perceptionSensorsExperimental" />` in the Capabilities tag between `<uap2:Capability ... >` and `<DeviceCapability ... >`. This the same as enabling Research Mode on HoloLens 1.
+6. If IMU is used, add `<DeviceCapability Name="backgroundSpatialPerception"/>` to DeviceCapability.
+7. Save the changes. Open `App/HL2ResearchModeUnitySample.sln`. Change the build type to Release/Master-ARM64-Device(or Remote Machine). Build - Deploy.
+8. Done!
 
-
-## Note:
-- The reconstructed point cloud still has the offset problem as is described [here](https://github.com/microsoft/HoloLens2ForCV/issues/12) for object beyond 1m.
-- To visualize the depth image, you need a grayscale shader applied to your preview plane. Example: [grayscale shader](https://github.com/qian256/HoloLensARToolKit/blob/master/HoloLensARToolKit/Assets/Sample/Grayscale.shader).
-- For point cloud, current implementation only returns the reconstructed point cloud as a float array (in the format of x,y,z,x,y,z,...). If you want to visualize it, I find [this project](https://github.com/MarekKowalski/LiveScan3D-Hololens) is a good example.
-- This project is mainly to show how to use Reseach Mode in Unity. I only provided implementation on AHAT camera image visualization and point cloud reconstruction (based on depth map of AHAT camera), two front spatial camera. The long-throw depth sensor and IMU sensor are also available thanks to @HoloAdventure. Feel free to modify the code according to your own need.
-- Only one of the short-throw(AHAT) and long-throw depth sensor should be enabled at the same time.
-- If you need a sample project to get started, you can refer to UnitySample folder.
+# Note
+- The app may not function properly the first time you open the deployed app when there are pop-up windows asking for permissions. You can simply grant the permissions, close the app and reopen it. Then everything should be fine.
+- You need to restart the device (hold the power button for several seconds) each time the device hiberates after you opened an app that uses research mode functions. So if your app suddenly cannot get any sensor data, try restarting your device. Please let me know if you know how to solve this issue.
