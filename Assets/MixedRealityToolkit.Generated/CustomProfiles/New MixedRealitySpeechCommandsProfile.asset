@@ -24,7 +24,7 @@ MonoBehaviour:
       description: 
       axisConstraint: 0
   - localizationKey: 
-    keyword: Stop
+    keyword: Avada Kedavra
     keyCode: 0
     action:
       id: 0
@@ -73,14 +73,7 @@ MonoBehaviour:
       description: 
       axisConstraint: 0
   - localizationKey: 
-    keyword: Toggle Screen
-    keyCode: 0
-    action:
-      id: 0
-      description: 
-      axisConstraint: 0
-  - localizationKey: 
-    keyword: Toggle Hands
+    keyword: Stop
     keyCode: 0
     action:
       id: 0
@@ -88,6 +81,20 @@ MonoBehaviour:
       axisConstraint: 0
   - localizationKey: 
     keyword: Toggle Cloud
+    keyCode: 0
+    action:
+      id: 0
+      description: 
+      axisConstraint: 0
+  - localizationKey: 
+    keyword: Toggle Preview
+    keyCode: 0
+    action:
+      id: 0
+      description: 
+      axisConstraint: 0
+  - localizationKey: 
+    keyword: Toggle Hands
     keyCode: 0
     action:
       id: 0

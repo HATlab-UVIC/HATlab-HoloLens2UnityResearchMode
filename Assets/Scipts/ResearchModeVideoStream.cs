@@ -56,6 +56,12 @@ public class ResearchModeVideoStream : MonoBehaviour
     private Texture2D RFMediaTexture = null;
     private byte[] RFFrameData = null;
 
+    public GameObject PVPreviewPlane = null;
+    private Material PVMediaMaterial = null;
+    private Texture2D PVMediaTexture = null;
+    private byte[] PVFrameData = null;
+
+
     public bool textVisible = true;
     public UnityEngine.UI.Text text;
 
@@ -118,7 +124,13 @@ public class ResearchModeVideoStream : MonoBehaviour
             depthPreviewPlane.SetActive(false);
             shortAbImagePreviewPlane.SetActive(false);
         }
-        
+
+        if (PVPreviewPlane != null)
+        {
+            PVMediaMaterial = PVPreviewPlane.GetComponent<MeshRenderer>().material;
+            PVMediaTexture = new Texture2D(1280, 720, TextureFormat.ARGB4444, false);
+            PVMediaMaterial.mainTexture = PVMediaTexture;
+        }
 
         if (LFPreviewPlane != null)
         {
@@ -452,8 +464,8 @@ public class ResearchModeVideoStream : MonoBehaviour
 
     public void TakeHolographicVideo()
     {
-        // TakeVideo videoCapture = new TakeVideo();
-        // videoCapture.BeginVideo();
+        TakeVideo videoCapture = new TakeVideo();
+        videoCapture.BeginVideo();
     }
 
     public void SaveSpatialImageEvent()

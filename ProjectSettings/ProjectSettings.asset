@@ -599,7 +599,7 @@ PlayerSettings:
   metroCertificatePassword: 
   metroCertificateSubject: Wenhao
   metroCertificateIssuer: Wenhao
-  metroCertificateNotAfter: 800884053b79d801
+  metroCertificateNotAfter: 80e2c2b33556da01
   metroApplicationDescription: Template_3D
   wsaImages: {}
   metroTileShortName: HL2ResearchModeUnitySample
@@ -619,9 +619,9 @@ PlayerSettings:
     WindowsStoreApps:
       AllJoyn: False
       Appointments: False
-      BackgroundMediaPlayback: False
+      BackgroundMediaPlayback: True
       BlockedChatMessages: False
-      Bluetooth: False
+      Bluetooth: True
       Chat: False
       CodeGeneration: False
       Contacts: False
@@ -645,14 +645,14 @@ PlayerSettings:
       Proximity: False
       RecordedCallsFolder: False
       RemoteSystem: False
-      RemovableStorage: False
+      RemovableStorage: True
       SharedUserCertificates: False
       SpatialPerception: True
       SystemManagement: False
       UserAccountInformation: False
       UserDataTasks: False
       UserNotificationListener: False
-      VideosLibrary: False
+      VideosLibrary: True
       VoipCall: False
       WebCam: True
   metroTargetDeviceFamilies:
