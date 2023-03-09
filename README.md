@@ -6,6 +6,12 @@ This Unity project shows
 - how to send image to laptop using basic socket. (Python server script in `python` folder)
 - how to obtain IMU data. (`Assets/Scenes/ImuViewSample.unity`)
 
+Added by the HATlab team
+
+- ability to send save point cloud data by added to TCPServer.py
+- ability to save images, video and point cloud files to holoLens storage
+- replaced the buttons with voice commands
+
 # Compatibility
 - Unity 2019.4*
 - Visual Studio 2019
@@ -28,3 +34,15 @@ This Unity project shows
 # Note
 - The app may not function properly the first time you open the deployed app when there are pop-up windows asking for permissions. You can simply grant the permissions, close the app and reopen it. Then everything should be fine.
 - You need to restart the device (hold the power button for several seconds) each time the device hiberates after you opened an app that uses research mode functions. So if your app suddenly cannot get any sensor data, try restarting your device. Please let me know if you know how to solve this issue.
+
+# Voice Commands 
+- Connect - Connects HoloLens 2 to python script on the port specified
+- Stop - Ends program
+- Send Spatial
+- Send Depth
+- Send Cloud
+- Take Cloud
+- Take Video
+- Toggle Cloud
+- Toggle Preview
+- Toggle Hands
